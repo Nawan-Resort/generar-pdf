@@ -1080,116 +1080,141 @@ function generarPDF() {
   btn.textContent = '⏳ Generando...';
   btn.disabled = true;
 
-  // 1. Aislar el template activo — clonar solo ese doc-body
   const sourceEl = document.getElementById('pdf-document');
   const activeTpl = document.getElementById(tplId);
-
-  // Ocultar todos los doc-body salvo el activo (para obtener dimensiones reales)
   const allBodies = document.querySelectorAll('.doc-body');
+
+  function cleanup() {
+    allBodies.forEach(el => el.classList.remove('hidden'));
+    allBodies.forEach(el => { if (el.id !== tplId) el.classList.add('hidden'); });
+    btn.textContent = '⬇ Descargar PDF';
+    btn.disabled = false;
+  }
+
   allBodies.forEach(el => el.classList.add('hidden'));
   activeTpl.classList.remove('hidden');
 
-  // Dar tiempo al browser para re-layout
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
 
       const DOC_W = 720;
-      const docH  = sourceEl.scrollHeight;
+      const docH = sourceEl.scrollHeight;
 
-      // 2. Crear iframe invisible con el documento completo
-      const iframe = document.createElement('iframe');
-      iframe.style.cssText = `position:fixed;top:0;left:0;width:${DOC_W}px;height:${docH}px;border:0;opacity:0;pointer-events:none;z-index:-1;`;
-      document.body.appendChild(iframe);
-
-      // 3. Escribir HTML limpio dentro del iframe (solo el doc, sin sidebar)
-      const iDoc = iframe.contentDocument || iframe.contentWindow.document;
-
-      // Extraer todos los estilos del documento actual
-      const styleSheets = Array.from(document.styleSheets).map(ss => {
-        try { return Array.from(ss.cssRules).map(r => r.cssText).join('\n'); }
-        catch(e) { return ''; }
-      }).join('\n');
-
-      // Clonar el pdf-document con solo el template activo visible
-      const clone = sourceEl.cloneNode(true);
-      clone.style.cssText = `width:${DOC_W}px;box-shadow:none;border-radius:0;margin:0;padding:0;`;
-      // En el clon, ocultar todos los doc-body excepto el activo
-      clone.querySelectorAll('.doc-body').forEach(b => b.classList.add('hidden'));
-      const cloneActive = clone.querySelector('#' + tplId);
-      if (cloneActive) cloneActive.classList.remove('hidden');
-
-      iDoc.open();
-      iDoc.write(`<!DOCTYPE html><html><head>
-        <meta charset="UTF-8">
-        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-        <style>
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          body { margin: 0; padding: 0; background: white; font-family: 'DM Sans', sans-serif; }
-          ${styleSheets}
-        </style>
-      </head><body></body></html>`);
-      iDoc.close();
-      iDoc.body.appendChild(clone);
-
-      // 4. Esperar fuentes + imágenes
-      const allImgs = clone.querySelectorAll('img');
-      const imgLoads = Array.from(allImgs).map(img => {
-        if (img.complete && img.naturalHeight > 0) return Promise.resolve();
-        return new Promise(res => { img.onload = res; img.onerror = res; setTimeout(res, 3000); });
+      // Pre-rasterizar SVGs a PNG — html2canvas no renderiza SVG inline con fuentes embebidas
+      const liveSvgs = Array.from(sourceEl.querySelectorAll('svg'));
+      const svgPromises = liveSvgs.map(svg => {
+        const rect = svg.getBoundingClientRect();
+        const w = Math.round(rect.width) || 200;
+        const h = Math.round(rect.height) || 56;
+        const svgStr = new XMLSerializer().serializeToString(svg);
+        const encoded = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+        return new Promise(resolve => {
+          const tmp = new Image();
+          tmp.onload = () => {
+            const c = document.createElement('canvas');
+            c.width = w * 2; c.height = h * 2;
+            c.getContext('2d').drawImage(tmp, 0, 0, c.width, c.height);
+            resolve({ dataUrl: c.toDataURL('image/png'), w, h });
+          };
+          tmp.onerror = () => resolve(null);
+          tmp.src = encoded;
+        });
       });
 
-      const fontLoad = document.fonts ? document.fonts.ready : Promise.resolve();
+      Promise.all(svgPromises).then(svgData => {
 
-      Promise.all([...imgLoads, fontLoad]).then(() => {
-        // Pequeño delay extra para que el iframe termine de renderizar
-        setTimeout(() => {
-          const realH = iDoc.body.scrollHeight || docH;
-          const pxToMm = 25.4 / 96; // 96dpi
-          const pageW = Math.ceil(DOC_W * pxToMm) + 2;
-          const pageH = Math.ceil(realH * pxToMm) + 2;
+        // Clonar y reemplazar SVGs por imágenes pre-rasterizadas
+        const clone = sourceEl.cloneNode(true);
+        clone.style.cssText = `width:${DOC_W}px;box-shadow:none;border-radius:0;margin:0;padding:0;`;
+        clone.querySelectorAll('.doc-body').forEach(b => b.classList.add('hidden'));
+        const cloneActive = clone.querySelector('#' + tplId);
+        if (cloneActive) cloneActive.classList.remove('hidden');
 
-          const opt = {
-            margin: 0,
-            filename: filename,
-            image: { type: 'jpeg', quality: 0.97 },
-            html2canvas: {
-              scale: 2,
-              useCORS: true,
-              allowTaint: true,
-              logging: false,
-              width: DOC_W,
-              height: realH,
-              windowWidth: DOC_W,
-              windowHeight: realH,
-              scrollX: 0,
-              scrollY: 0,
-              x: 0,
-              y: 0,
-              foreignObjectRendering: false
-            },
-            jsPDF: {
-              unit: 'mm',
-              format: [pageW, pageH],
-              orientation: 'portrait',
-              compress: true
-            }
-          };
+        Array.from(clone.querySelectorAll('svg')).forEach((svg, i) => {
+          if (!svgData[i]) return;
+          const { dataUrl, w, h } = svgData[i];
+          const imgEl = document.createElement('img');
+          imgEl.src = dataUrl;
+          imgEl.style.cssText = `display:block;width:${w}px;height:${h}px;`;
+          svg.parentNode.replaceChild(imgEl, svg);
+        });
 
-          html2pdf().set(opt).from(clone).save().then(() => {
-            document.body.removeChild(iframe);
-            allBodies.forEach(el => el.classList.remove('hidden'));
-            allBodies.forEach(el => { if (el.id !== tplId) el.classList.add('hidden'); });
-            btn.textContent = '⬇ Descargar PDF';
-            btn.disabled = false;
-          }).catch(err => {
-            console.error('PDF error:', err);
-            document.body.removeChild(iframe);
-            allBodies.forEach(el => el.classList.remove('hidden'));
-            allBodies.forEach(el => { if (el.id !== tplId) el.classList.add('hidden'); });
-            btn.textContent = '⬇ Descargar PDF';
-            btn.disabled = false;
-          });
-        }, 400);
+        // Crear iframe invisible
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = `position:fixed;top:0;left:0;width:${DOC_W}px;height:${docH}px;border:0;opacity:0;pointer-events:none;z-index:-1;`;
+        document.body.appendChild(iframe);
+
+        const iDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const styleSheets = Array.from(document.styleSheets).map(ss => {
+          try { return Array.from(ss.cssRules).map(r => r.cssText).join('\n'); }
+          catch(e) { return ''; }
+        }).join('\n');
+
+        iDoc.open();
+        iDoc.write(`<!DOCTYPE html><html><head>
+          <meta charset="UTF-8">
+          <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+          <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body { margin: 0; padding: 0; background: white; font-family: 'DM Sans', sans-serif; }
+            ${styleSheets}
+          </style>
+        </head><body></body></html>`);
+        iDoc.close();
+        iDoc.body.appendChild(clone);
+
+        const allImgs = clone.querySelectorAll('img');
+        const imgLoads = Array.from(allImgs).map(img => {
+          if (img.complete && img.naturalHeight > 0) return Promise.resolve();
+          return new Promise(res => { img.onload = res; img.onerror = res; setTimeout(res, 3000); });
+        });
+        const fontLoad = document.fonts ? document.fonts.ready : Promise.resolve();
+
+        Promise.all([...imgLoads, fontLoad]).then(() => {
+          setTimeout(() => {
+            const realH = clone.scrollHeight || iDoc.body.scrollHeight || docH;
+            const pxToMm = 25.4 / 96;
+            const pageW = Math.ceil(DOC_W * pxToMm);
+            const pageH = Math.ceil(realH * pxToMm) + 6; // margen amplio para garantizar 1 sola página
+
+            const opt = {
+              margin: 0,
+              filename: filename,
+              image: { type: 'jpeg', quality: 0.97 },
+              html2canvas: {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                width: DOC_W,
+                height: realH,
+                windowWidth: DOC_W,
+                windowHeight: realH,
+                scrollX: 0,
+                scrollY: 0,
+                x: 0,
+                y: 0,
+                foreignObjectRendering: false
+              },
+              jsPDF: {
+                unit: 'mm',
+                format: [pageW, pageH],
+                orientation: 'portrait',
+                compress: true
+              },
+              pagebreak: { mode: [] }
+            };
+
+            html2pdf().set(opt).from(clone).save().then(() => {
+              document.body.removeChild(iframe);
+              cleanup();
+            }).catch(err => {
+              console.error('PDF error:', err);
+              document.body.removeChild(iframe);
+              cleanup();
+            });
+          }, 600);
+        });
       });
     });
   });

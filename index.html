@@ -236,6 +236,24 @@
     font-size: 12px; color: #856404; font-style: italic; line-height: 1.5;
   }
 
+  /* Banner destacado del nombre de la promoción */
+  .doc-promo-highlight {
+    background: var(--navy); padding: 22px 36px 18px;
+    text-align: center; border-bottom: 3px solid #e0a800;
+  }
+  .doc-promo-highlight .promo-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 3px;
+    text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 8px;
+  }
+  .doc-promo-highlight .promo-name {
+    font-family: var(--font-display); font-size: 30px; font-weight: 600;
+    color: #fff; letter-spacing: 1px; text-transform: capitalize; line-height: 1.2;
+  }
+  .doc-promo-highlight .promo-aviso {
+    font-size: 10px; color: rgba(255,255,255,0.4);
+    margin-top: 8px; font-style: italic; letter-spacing: 0.5px;
+  }
+
   /* Política cancelación */
   .doc-politica { background: var(--gray-light); padding: 18px 36px; border-bottom: 1px solid var(--gray-mid); }
   .doc-politica-title { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
@@ -957,8 +975,12 @@
       <div class="doc-saludo">
         <p><span id="p7-tratamiento">Estimado</span>: <span id="p7-nombre">—</span></p>
         <p class="mt-2"><span class="saludo-val" id="p7-saludo">Buenos días</span></p>
-        <p style="margin-top:10px;">Muchas gracias por comunicarse con Nawan Resort Serrano. En relación a su consulta, le informamos que contamos con disponibilidad de nuestra <em style="font-style:italic;" id="p7-promo-nombre">promoción aniversario</em> para la fecha solicitada.</p>
-        <div class="doc-promo-badge">*La <span id="p7-promo-badge">promoción aniversario</span> cuenta con cupos limitados. La respuesta a este mensaje no garantiza disponibilidad al momento de confirmar la reserva.</div>
+        <p style="margin-top:10px;">Muchas gracias por comunicarse con Nawan Resort Serrano. Nos complace informarle que contamos con disponibilidad para la fecha solicitada bajo nuestra oferta especial <strong style="color:var(--navy);font-weight:700;" id="p7-promo-nombre">promoción aniversario</strong>.</p>
+      </div>
+      <div class="doc-promo-highlight">
+        <div class="promo-eyebrow">Oferta especial disponible</div>
+        <div class="promo-name" id="p7-promo-destacado">promoción aniversario</div>
+        <div class="promo-aviso">Cupos limitados · La disponibilidad queda sujeta a confirmación al momento de reservar</div>
       </div>
       <div class="doc-dates-banner">
         <div class="doc-col">
@@ -1265,7 +1287,7 @@ function actualizar() {
   set('p7-tratamiento',tratam); set('p7-nombre',nombre); set('p7-saludo',saludo);
   set('p7-checkin',ci); set('p7-checkout',co);
   set('p7-ci-hora',ciLabel); set('p7-co-hora',coLabel);
-  set('p7-promo-nombre',promo); set('p7-promo-badge',promo);
+  set('p7-promo-nombre',promo); set('p7-promo-destacado',promo);
   if (depTxt) set('p7-deposito-texto', depTxt);
 }
 

@@ -285,6 +285,20 @@
 
   /* (1 x habitación) en tarifas */
   .t-qty { font-size: 10px; color: var(--gray-text); font-weight: 400; display: block; margin-top: 1px; }
+
+  /* Selector múltiple de habitaciones en sidebar */
+  .hab-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+  .hab-tipo { flex: 1; font-size: 12px !important; padding: 6px 8px !important; }
+  .hab-cant { width: 52px !important; min-width: 52px; font-size: 13px !important; padding: 6px 8px !important; text-align: center; }
+  .hab-del { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 4px; color: rgba(255,255,255,0.4); font-size: 13px; cursor: pointer; padding: 4px 8px; flex-shrink: 0; transition: all 0.15s; }
+  .hab-del:hover { color: white; background: rgba(255,255,255,0.1); }
+  .btn-add-hab { background: rgba(255,255,255,0.06); border: 1px dashed rgba(255,255,255,0.22); border-radius: 6px; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 8px; cursor: pointer; width: 100%; margin-top: 4px; transition: background 0.15s; }
+  .btn-add-hab:hover { background: rgba(255,255,255,0.1); color: white; }
+
+  /* Fila de habitación multi-línea en el documento */
+  .doc-row.top { align-items: flex-start; }
+  .doc-hab-list { display: flex; flex-direction: column; gap: 3px; }
+  .doc-hab-list span { font-size: 14px; color: #2d3748; display: block; }
 </style>
 </head>
 <body>
@@ -432,23 +446,21 @@
       <label id="lbl-noches">Cantidad de noches
         <input type="number" id="f-noches" placeholder="Ej: 3" min="1" oninput="actualizar()">
       </label>
-      <label id="lbl-hab">Tipo de Habitación
-        <select id="f-hab" onchange="actualizar()">
-          <option value="1 (UNA) Habitación Doble Twin (2 camas de 1.30 mts de ancho c/u.)">Doble Twin</option>
-          <option value="1 (UNA) Habitación Matrimonial (cama king size)">Matrimonial</option>
-          <option value="1 (UNA) Habitación Triple (2 camas de 1.30 mts de ancho c/u.)">Triple</option>
-          <option value="1 (UNA) Habitación Matrimonial Superior (3 camas simples o cama matrimonial king size + 1 cama simple)">Matrimonial Superior</option>
-          <option value="1 (UNA) Habitación Cuádruple (cama matrimonial king size + 2 camas single)">Cuádruple</option>
-          <option value="1 (UNA) Suite de Lujo (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)">Suite de Lujo</option>
-        </select>
-      </label>
-      <div class="row-2" id="lbl-huespedes">
-        <label>Adultos
-          <input type="number" id="f-adultos" placeholder="2" min="0" oninput="actualizar()">
-        </label>
-        <label>Menores
-          <input type="number" id="f-menores" placeholder="0" min="0" oninput="actualizar()">
-        </label>
+      <div id="lbl-hab">
+        <div class="form-section-title" style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;">Habitaciones</div>
+        <div id="habitaciones-lista"></div>
+        <button class="btn-add-hab" onclick="agregarHabitacion()">＋ Agregar habitación</button>
+      </div>
+      <div id="lbl-huespedes">
+        <div class="form-section-title" style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;">Pasajeros</div>
+        <div class="row-2">
+          <label>Adultos
+            <input type="number" id="f-adultos" placeholder="2" min="0" oninput="actualizar()">
+          </label>
+          <label>Menores (hasta 10 años)
+            <input type="number" id="f-menores" placeholder="0" min="0" oninput="actualizar()">
+          </label>
+        </div>
       </div>
       <label id="lbl-preciox">Precio final por noche
         <input type="text" id="f-precio-noche" placeholder="Ej: 85.000" oninput="actualizar()">
@@ -605,7 +617,8 @@
         </div>
       </div>
       <div class="doc-datos">
-        <div class="doc-row"><span class="doc-key">Habitación</span><span class="doc-val" id="p1-hab">—</span></div>
+        <div class="doc-row top"><span class="doc-key">Habitación</span><div class="doc-val doc-hab-list" id="p1-hab"><span>—</span></div></div>
+        <div class="doc-row"><span class="doc-key">Pasajeros</span><span class="doc-val" id="p1-huespedes">—</span></div>
         <div class="doc-row"><span class="doc-key">Precio final por noche</span><span class="doc-val" id="p1-precio-noche">—</span></div>
         <div class="doc-row" style="border:none"><span class="doc-key">Cantidad de Noches</span><span class="doc-val" id="p1-noches">—</span></div>
       </div>
@@ -681,7 +694,8 @@
         </div>
       </div>
       <div class="doc-datos">
-        <div class="doc-row"><span class="doc-key">Habitación</span><span class="doc-val" id="p2-hab">—</span></div>
+        <div class="doc-row top"><span class="doc-key">Habitación</span><div class="doc-val doc-hab-list" id="p2-hab"><span>—</span></div></div>
+        <div class="doc-row"><span class="doc-key">Pasajeros</span><span class="doc-val" id="p2-huespedes">—</span></div>
         <div class="doc-row"><span class="doc-key">Precio final por noche</span><span class="doc-val" id="p2-precio-noche">—</span></div>
         <div class="doc-row" style="border:none"><span class="doc-key">Cantidad de Noches</span><span class="doc-val" id="p2-noches">—</span></div>
       </div>
@@ -756,7 +770,8 @@
         </div>
       </div>
       <div class="doc-datos">
-        <div class="doc-row"><span class="doc-key">Habitación</span><span class="doc-val" id="p3-hab">—</span></div>
+        <div class="doc-row top"><span class="doc-key">Habitación</span><div class="doc-val doc-hab-list" id="p3-hab"><span>—</span></div></div>
+        <div class="doc-row"><span class="doc-key">Pasajeros</span><span class="doc-val" id="p3-huespedes">—</span></div>
         <div class="doc-row"><span class="doc-key">Precio final por noche</span><span class="doc-val" id="p3-precio-noche">—</span></div>
         <div class="doc-row" style="border:none"><span class="doc-key">Cantidad de Noches</span><span class="doc-val" id="p3-noches">—</span></div>
       </div>
@@ -820,8 +835,8 @@
       </div>
       <div class="doc-datos">
         <div class="doc-row"><span class="doc-key">Cantidad de Noches</span><span class="doc-val" id="p4-noches">—</span></div>
-        <div class="doc-row"><span class="doc-key">Habitación</span><span class="doc-val" id="p4-hab">—</span></div>
-        <div class="doc-row"><span class="doc-key">Huéspedes</span><span class="doc-val" id="p4-huespedes">—</span></div>
+        <div class="doc-row top"><span class="doc-key">Habitación</span><div class="doc-val doc-hab-list" id="p4-hab"><span>—</span></div></div>
+        <div class="doc-row"><span class="doc-key">Pasajeros</span><span class="doc-val" id="p4-huespedes">—</span></div>
         <div class="doc-row" style="border:none"><span class="doc-key">Precio final por noche</span><span class="doc-val" id="p4-precio-noche">—</span></div>
       </div>
       <div class="doc-row-money" style="border-bottom:1px solid var(--gray-mid)">
@@ -1022,7 +1037,7 @@ function cambiarPlantilla() {
   const isDispTar = val === 'disp_positiva' || val === 'disp_promo';
   const hasSaldo = val === 'deposito_tarifa' || val === 'reserva_deposito';
   const hasNro = !isDisp;
-  const hasHuespedes = val === 'reserva_deposito';
+  const hasHuespedes = !isDisp; // pasajeros visible en todos los templates de reserva
   const hasVigencia = val === 'deposito_tarifa' || val === 'confirmacion_promo';
   const hasPromo = val === 'disp_promo' || val === 'confirmacion_promo';
   const hasPrecioNoche = !isDisp;
@@ -1084,6 +1099,70 @@ function calcularAutomaticos() {
   }
 }
 
+// ===== HABITACIONES MÚLTIPLES =====
+const HAB_TIPOS = [
+  { val: 'Doble Twin (2 camas de 1.30 mts de ancho c/u.)',                                               label: 'Doble Twin' },
+  { val: 'Matrimonial (cama king size)',                                                                   label: 'Matrimonial' },
+  { val: 'Triple (2 camas de 1.30 mts de ancho c/u.)',                                                   label: 'Triple' },
+  { val: 'Matrimonial Superior (3 camas simples o cama matrimonial king size + 1 cama simple)',            label: 'Matrimonial Superior' },
+  { val: 'Cuádruple (cama matrimonial king size + 2 camas single)',                                       label: 'Cuádruple' },
+  { val: 'Suite de Lujo (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)', label: 'Suite de Lujo' },
+];
+
+function crearSelectTipo() {
+  const sel = document.createElement('select');
+  sel.className = 'hab-tipo';
+  sel.onchange = actualizar;
+  HAB_TIPOS.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.val; opt.textContent = t.label;
+    sel.appendChild(opt);
+  });
+  return sel;
+}
+
+function agregarHabitacion(tipoVal, cant) {
+  const lista = document.getElementById('habitaciones-lista');
+  const row = document.createElement('div');
+  row.className = 'hab-row';
+
+  const sel = crearSelectTipo();
+  if (tipoVal) sel.value = tipoVal;
+
+  const num = document.createElement('input');
+  num.type = 'number'; num.className = 'hab-cant';
+  num.value = cant || 1; num.min = 1; num.max = 10;
+  num.oninput = actualizar;
+
+  const del = document.createElement('button');
+  del.className = 'hab-del'; del.textContent = '×';
+  del.title = 'Quitar habitación';
+  del.onclick = function() {
+    if (document.querySelectorAll('.hab-row').length > 1) {
+      row.remove(); actualizar();
+    }
+  };
+
+  row.appendChild(sel); row.appendChild(num); row.appendChild(del);
+  lista.appendChild(row);
+  actualizar();
+}
+
+function buildHabHTML() {
+  const rows = document.querySelectorAll('.hab-row');
+  if (!rows.length) return '<span>—</span>';
+  return Array.from(rows).map(r => {
+    const tipo = r.querySelector('.hab-tipo').value;
+    const cant = parseInt(r.querySelector('.hab-cant').value) || 1;
+    return '<span>' + cant + ' ' + (cant === 1 ? 'Habitación' : 'Habitaciones') + ' ' + tipo + '</span>';
+  }).join('');
+}
+
+function setHab(id) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = buildHabHTML();
+}
+
 // Actualiza precio y visibilidad de un li de tarifa en el PDF (p6 y p7)
 // Si no hay precio ingresado, la habitación no aparece en el PDF
 function visTarifa(key, val) {
@@ -1109,8 +1188,8 @@ function actualizar() {
   const coHora    = document.getElementById('f-co-hora').value || '11:00';
   const noches    = document.getElementById('f-noches').value;
   const hab       = document.getElementById('f-hab').value;
-  const adul      = document.getElementById('f-adultos').value || '0';
-  const men       = document.getElementById('f-menores').value || '0';
+  const adul      = document.getElementById('f-adultos').value || '';
+  const men       = document.getElementById('f-menores').value || '';
   const pn        = document.getElementById('f-precio-noche').value;
   const total     = document.getElementById('f-total').value;
   const dep       = document.getElementById('f-depositado').value;
@@ -1120,7 +1199,10 @@ function actualizar() {
   const promo     = document.getElementById('f-promo-nombre').value || 'promoción aniversario';
   const depTxt    = document.getElementById('f-deposito-texto').value || '';
   const nochesTxt = noches ? noches + ' Noches' : '—';
-  const huesped   = adul + ' Adultos y ' + men + ' Menores';
+  const huesped   = [
+    adul ? adul + (adul === '1' ? ' Adulto' : ' Adultos') : '',
+    men  ? men  + (men  === '1' ? ' Menor'  : ' Menores') + ' (hasta 10 años)' : ''
+  ].filter(Boolean).join(' · ') || '—';
   const datesOver = 'Check-in: ' + ci + ' · Check-out: ' + co;
   const ciLabel   = 'Desde ' + ciHora;
   const coLabel   = 'Hasta ' + coHora;
@@ -1137,7 +1219,7 @@ function actualizar() {
   set('p1-tratamiento',tratam); set('p1-nombre',nombre); set('p1-saludo',saludo); set('p1-nro',nro);
   set('p1-checkin',ci); set('p1-checkout',co); set('p1-dates-over',datesOver);
   set('p1-ci-hora',ciLabel); set('p1-co-hora',coLabel);
-  set('p1-hab',hab); set('p1-precio-noche',fmt(pn)); set('p1-noches',nochesTxt);
+  setHab('p1-hab'); set('p1-huespedes',huesped); set('p1-precio-noche',fmt(pn)); set('p1-noches',nochesTxt);
   set('p1-total',fmt(total)); set('p1-monto-garantia',garan||'—');
   set('p1-vigencia-pol',vig);
 
@@ -1145,14 +1227,14 @@ function actualizar() {
   set('p2-tratamiento',tratam); set('p2-nombre',nombre); set('p2-saludo',saludo); set('p2-nro',nro);
   set('p2-checkin',ci); set('p2-checkout',co); set('p2-dates-over',datesOver);
   set('p2-ci-hora',ciLabel); set('p2-co-hora',coLabel);
-  set('p2-hab',hab); set('p2-precio-noche',fmt(pn)); set('p2-noches',nochesTxt);
+  setHab('p2-hab'); set('p2-huespedes',huesped); set('p2-precio-noche',fmt(pn)); set('p2-noches',nochesTxt);
   set('p2-total',fmt(total)); set('p2-monto-garantia',garan||'—');
 
   // TPL 3 (deposito_tarifa)
   set('p3-tratamiento',tratam); set('p3-nombre',nombre); set('p3-saludo',saludo); set('p3-nro',nro);
   set('p3-checkin',ci); set('p3-checkout',co);
   set('p3-ci-hora',ciLabel); set('p3-co-hora',coLabel);
-  set('p3-hab',hab); set('p3-precio-noche',fmt(pn)); set('p3-noches',nochesTxt);
+  setHab('p3-hab'); set('p3-huespedes',huesped); set('p3-precio-noche',fmt(pn)); set('p3-noches',nochesTxt);
   set('p3-total',fmt(total)); set('p3-depositado',fmt(dep)); set('p3-saldo',fmt(saldo));
   set('p3-vigencia',vig);
 
@@ -1160,7 +1242,7 @@ function actualizar() {
   set('p4-nombre',nombre); set('p4-nro',nro);
   set('p4-checkin',ci); set('p4-checkout',co);
   set('p4-ci-hora',ciLabel); set('p4-co-hora',coLabel);
-  set('p4-noches',nochesTxt); set('p4-hab',hab);
+  set('p4-noches',nochesTxt); setHab('p4-hab');
   set('p4-huespedes',huesped); set('p4-precio-noche',fmt(pn));
   set('p4-total',fmt(total)); set('p4-depositado',fmt(dep)); set('p4-saldo',fmt(saldo));
 
@@ -1339,7 +1421,8 @@ function generarPDF() {
   });
 }
 
-// Init
+// Init — agregar primera habitación por defecto
+agregarHabitacion();
 cambiarPlantilla();
 actualizar();
 </script>

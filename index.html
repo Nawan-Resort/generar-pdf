@@ -1050,7 +1050,7 @@ function cambiarPlantilla() {
   tog('lbl-nro', hasNro);
   tog('lbl-horarios', true);
   tog('lbl-noches', !isDisp);
-  tog('lbl-hab', !isDisp);
+  tog('lbl-hab', !isDisp); // selector multi-habitacion solo para confirmaciones
   tog('lbl-huespedes', hasHuespedes);
   tog('lbl-preciox', hasPrecioNoche);
   tog('lbl-total', !isDisp);
@@ -1187,7 +1187,6 @@ function actualizar() {
   const ciHora    = document.getElementById('f-ci-hora').value || '14:30';
   const coHora    = document.getElementById('f-co-hora').value || '11:00';
   const noches    = document.getElementById('f-noches').value;
-  const hab       = document.getElementById('f-hab').value;
   const adul      = document.getElementById('f-adultos').value || '';
   const men       = document.getElementById('f-menores').value || '';
   const pn        = document.getElementById('f-precio-noche').value;

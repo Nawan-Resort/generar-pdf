@@ -610,7 +610,12 @@
       <div class="doc-saludo">
         <p><span id="p1-tratamiento">Estimado</span>: <span id="p1-nombre">—</span></p>
         <p class="mt-2"><span class="saludo-val" id="p1-saludo">Buenos días</span></p>
-        <p style="margin-top:10px;">Es un gusto continuar en comunicación con usted. A continuación, le detallamos su solicitud de reserva:</p>
+        <p style="margin-top:10px;">Es un gusto continuar en comunicación con usted. A continuación, le detallamos la confirmación de su reserva bajo nuestra oferta especial <strong style="color:var(--navy);font-weight:700;" id="p1-promo-nombre">promoción aniversario</strong>:</p>
+      </div>
+      <div class="doc-promo-highlight">
+        <div class="promo-eyebrow">Reserva confirmada bajo promoción</div>
+        <div class="promo-name" id="p1-promo-destacado">promoción aniversario</div>
+        <div class="promo-aviso">Tarifa especial sujeta a vigencia · Ver condiciones de cancelación más abajo</div>
       </div>
       <div class="doc-reserva-banner"><p>Su número de reserva es # <span id="p1-nro">—</span></p></div>
       <div class="doc-foto-wrap">
@@ -1234,6 +1239,7 @@ function actualizar() {
   setHab('p1-hab'); set('p1-huespedes',huesped); set('p1-precio-noche',fmt(pn)); set('p1-noches',nochesTxt);
   set('p1-total',fmt(total)); set('p1-monto-garantia',garan||'—');
   set('p1-vigencia-pol',vig);
+  set('p1-promo-nombre',promo); set('p1-promo-destacado',promo);
 
   // TPL 2 (solicitud_garantia)
   set('p2-tratamiento',tratam); set('p2-nombre',nombre); set('p2-saludo',saludo); set('p2-nro',nro);

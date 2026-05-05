@@ -80,6 +80,13 @@
   .btn-generate:active { transform: scale(0.98); }
   .btn-note { font-size: 10px; color: rgba(255,255,255,0.3); text-align: center; margin-top: -10px; }
 
+  /* Validación de fechas */
+  input.date-error { border-color: #e74c3c !important; background: rgba(231,76,60,0.18) !important; }
+  .date-error-msg { font-size: 11px; color: #e74c3c; margin-top: -4px; display: none; line-height: 1.4; }
+  .date-error-msg.visible { display: block; }
+  .btn-generate:disabled { background: #555e6e; cursor: not-allowed; opacity: 0.6; }
+  .btn-generate:disabled:hover { background: #555e6e; }
+
   /* ===== PREVIEW AREA ===== */
   .preview-area {
     flex: 1; padding: 36px; overflow-y: auto;
@@ -447,6 +454,7 @@
           <input type="date" id="f-checkout" onchange="actualizar()">
         </label>
       </div>
+      <div id="fecha-error-msg" class="date-error-msg">⚠ El Check-Out debe ser posterior al Check-In.</div>
       <div class="row-2" id="lbl-horarios">
         <label>Check-In desde
           <input type="text" id="f-ci-hora" value="14:30" oninput="actualizar()">
@@ -518,7 +526,7 @@
   </div>
 
   <div class="sep"></div>
-  <button class="btn-generate" onclick="generarPDF()">⬇ Guardar PDF</button>
+  <button id="btn-generar" class="btn-generate" onclick="generarPDF()">⬇ Guardar PDF</button>
   <p class="btn-note">Se abre el diálogo para elegir carpeta y nombre</p>
 </aside>
 
@@ -1202,8 +1210,17 @@ function actualizar() {
   const tratam    = document.getElementById('f-tratamiento').value || 'Estimado';
   const saludo    = document.getElementById('f-saludo').value;
   const nro       = document.getElementById('f-nro').value || '—';
-  const ci        = fmtDate(document.getElementById('f-checkin').value);
-  const co        = fmtDate(document.getElementById('f-checkout').value);
+  const ciRaw     = document.getElementById('f-checkin').value;
+  const coRaw     = document.getElementById('f-checkout').value;
+  const ci        = fmtDate(ciRaw);
+  const co        = fmtDate(coRaw);
+
+  // Validación de fechas
+  const fechaInvalida = !!(ciRaw && coRaw && coRaw <= ciRaw);
+  document.getElementById('f-checkin').classList.toggle('date-error', fechaInvalida);
+  document.getElementById('f-checkout').classList.toggle('date-error', fechaInvalida);
+  document.getElementById('fecha-error-msg').classList.toggle('visible', fechaInvalida);
+  document.getElementById('btn-generar').disabled = fechaInvalida;
   const ciHora    = document.getElementById('f-ci-hora').value || '14:30';
   const coHora    = document.getElementById('f-co-hora').value || '11:00';
   const noches    = document.getElementById('f-noches').value;
@@ -1297,6 +1314,9 @@ function fmtFechaArchivo(isoDate) {
 }
 
 function generarPDF() {
+  const ciRaw = document.getElementById('f-checkin').value;
+  const coRaw = document.getElementById('f-checkout').value;
+  if (ciRaw && coRaw && coRaw <= ciRaw) return; // fechas inválidas, bloquear
   const val    = document.getElementById('sel-plantilla').value;
   const nombre = (document.getElementById('f-nombre').value || 'Cliente').trim().replace(/\s+/g,'_');
   const ciRaw  = document.getElementById('f-checkin').value;

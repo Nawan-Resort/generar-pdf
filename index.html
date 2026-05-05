@@ -510,7 +510,7 @@
       <div class="tarifa-row"><span class="tarifa-label">Doble Twin</span><input type="text" id="t-twin" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
       <div class="tarifa-row"><span class="tarifa-label">Matrimonial</span><input type="text" id="t-matri" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
       <div class="tarifa-row"><span class="tarifa-label">Triple</span><input type="text" id="t-triple" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
-      <div class="tarifa-row"><span class="tarifa-label">Matrimonial Superior</span><input type="text" id="t-superior" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
+      <div class="tarifa-row"><span class="tarifa-label">Triple Matrimonial</span><input type="text" id="t-superior" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
       <div class="tarifa-row"><span class="tarifa-label">Cuádruple</span><input type="text" id="t-cuad" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
       <div class="tarifa-row"><span class="tarifa-label">Suite de Lujo</span><input type="text" id="t-suite" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
       <div class="tarifa-row"><span class="tarifa-label">Adicional niños (3–5 años)</span><input type="text" id="t-ninos" class="tarifa-input" placeholder="$" oninput="actualizar()"></div>
@@ -935,7 +935,7 @@
           <li id="p6-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas de 1.30mts de ancho c/u.)</span><span class="t-price" id="p6-twin">$—</span></li>
           <li id="p6-matri-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL (cama king size)</span><span class="t-price" id="p6-matri">$—</span></li>
           <li id="p6-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas de 1.30 mts de ancho c/u.)</span><span class="t-price" id="p6-triple">$—</span></li>
-          <li id="p6-superior-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL SUPERIOR (cama tamaño king size + una cama individual)</span><span class="t-price" id="p6-superior">$—</span></li>
+          <li id="p6-superior-li" class="doc-tarifa-item"><span class="t-name">TRIPLE MATRIMONIAL (cama tamaño king size + una cama individual)</span><span class="t-price" id="p6-superior">$—</span></li>
           <li id="p6-cuad-li" class="doc-tarifa-item"><span class="t-name">CUÁDRUPLE (cama matrimonial king size + 2 camas individuales)</span><span class="t-price" id="p6-cuad">$—</span></li>
           <li id="p6-suite-li" class="doc-tarifa-item"><span class="t-name">SUITE DE LUJO (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)</span><span class="t-price" id="p6-suite">$—</span></li>
           <li id="p6-ninos-li" class="doc-tarifa-item"><span class="t-name">ADICIONAL niños de 3 a 5 años compartiendo plaza<span class="t-qty">Máximo 1 adicional por habitación</span></span><span class="t-price" id="p6-ninos">$—</span></li>
@@ -999,9 +999,10 @@
           <li id="p7-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas de 1.30mts de ancho c/u.)</span><span class="t-price" id="p7-twin">$—</span></li>
           <li id="p7-matri-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL (cama king size)</span><span class="t-price" id="p7-matri">$—</span></li>
           <li id="p7-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas de 1.30 mts de ancho c/u.)</span><span class="t-price" id="p7-triple">$—</span></li>
-          <li id="p7-superior-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL SUPERIOR (cama tamaño king size + una cama individual)</span><span class="t-price" id="p7-superior">$—</span></li>
+          <li id="p7-superior-li" class="doc-tarifa-item"><span class="t-name">TRIPLE MATRIMONIAL (cama tamaño king size + una cama individual)</span><span class="t-price" id="p7-superior">$—</span></li>
           <li id="p7-cuad-li" class="doc-tarifa-item"><span class="t-name">CUÁDRUPLE (cama matrimonial king size + 2 camas individuales)</span><span class="t-price" id="p7-cuad">$—</span></li>
           <li id="p7-suite-li" class="doc-tarifa-item"><span class="t-name">SUITE DE LUJO (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)</span><span class="t-price" id="p7-suite">$—</span></li>
+          <li id="p7-ninos-li" class="doc-tarifa-item"><span class="t-name">ADICIONAL niños de 3 a 5 años compartiendo plaza<span class="t-qty">Máximo 1 adicional por habitación</span></span><span class="t-price" id="p7-ninos">$—</span></li>
         </ul>
         <div class="doc-amenities-note">Todas las habitaciones cuentan con teléfono, caja de seguridad, frigobar, TV satelital y Wi-Fi gratuito</div>
       </div>
@@ -1123,7 +1124,7 @@ const HAB_TIPOS = [
   { val: 'Doble Twin (2 camas de 1.30 mts de ancho c/u.)',                                               label: 'Doble Twin' },
   { val: 'Matrimonial (cama king size)',                                                                   label: 'Matrimonial' },
   { val: 'Triple (3 camas de 1.30 mts de ancho c/u.)',                                                   label: 'Triple' },
-  { val: 'Matrimonial Superior (cama tamaño king size + una cama individual)',            label: 'Matrimonial Superior' },
+  { val: 'Triple Matrimonial (cama tamaño king size + una cama individual)',              label: 'Triple Matrimonial' },
   { val: 'Cuádruple (cama matrimonial king size + 2 camas individuales)',                                       label: 'Cuádruple' },
   { val: 'Suite de Lujo (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)', label: 'Suite de Lujo' },
 ];

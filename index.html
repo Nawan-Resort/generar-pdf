@@ -1289,11 +1289,26 @@ function actualizar() {
   if (depTxt) set('p7-deposito-texto', depTxt);
 }
 
+function fmtFechaArchivo(isoDate) {
+  if (!isoDate) return null;
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const [, m, d] = isoDate.split('-');
+  return d + meses[parseInt(m,10)-1];
+}
+
 function generarPDF() {
-  const val = document.getElementById('sel-plantilla').value;
-  const nombre = (document.getElementById('f-nombre').value || 'Cliente').replace(/\s+/g,'_');
-  const checkin = (document.getElementById('f-checkin').value || 'XX').replace(/-/g,'');
-  const filename = PLANTILLAS[val].label + '-' + nombre + '-' + checkin + '.pdf';
+  const val    = document.getElementById('sel-plantilla').value;
+  const nombre = (document.getElementById('f-nombre').value || 'Cliente').trim().replace(/\s+/g,'_');
+  const ciRaw  = document.getElementById('f-checkin').value;
+  const coRaw  = document.getElementById('f-checkout').value;
+  const ci     = fmtFechaArchivo(ciRaw);
+  const co     = fmtFechaArchivo(coRaw);
+  const label  = PLANTILLAS[val].label;
+
+  let partes = [label, nombre];
+  if (ci) partes.push(ci);
+  if (co && co !== ci) partes.push(co);
+  const filename = partes.join('_') + '.pdf';
   const tplId = PLANTILLAS[val].tpl;
 
   const btn = document.querySelector('.btn-generate');

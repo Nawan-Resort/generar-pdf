@@ -940,9 +940,9 @@
       <div class="doc-section">
         <div class="doc-section-title">Opciones y Tarifas de Alojamiento – Precio final por noche</div>
         <ul class="doc-tarifa-list">
-          <li id="p6-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas de 1.30mts de ancho c/u.)</span><span class="t-price" id="p6-twin">$—</span></li>
+          <li id="p6-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas individuales)</span><span class="t-price" id="p6-twin">$—</span></li>
           <li id="p6-matri-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL (cama king size)</span><span class="t-price" id="p6-matri">$—</span></li>
-          <li id="p6-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas de 1.30 mts de ancho c/u.)</span><span class="t-price" id="p6-triple">$—</span></li>
+          <li id="p6-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas individuales)</span><span class="t-price" id="p6-triple">$—</span></li>
           <li id="p6-superior-li" class="doc-tarifa-item"><span class="t-name">TRIPLE MATRIMONIAL (cama tamaño king size + una cama individual)</span><span class="t-price" id="p6-superior">$—</span></li>
           <li id="p6-cuad-li" class="doc-tarifa-item"><span class="t-name">CUÁDRUPLE (cama matrimonial king size + 2 camas individuales)</span><span class="t-price" id="p6-cuad">$—</span></li>
           <li id="p6-suite-li" class="doc-tarifa-item"><span class="t-name">SUITE DE LUJO (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)</span><span class="t-price" id="p6-suite">$—</span></li>
@@ -1004,9 +1004,9 @@
       <div class="doc-section">
         <div class="doc-section-title">Opciones y Tarifas de Alojamiento – Precio final por noche</div>
         <ul class="doc-tarifa-list">
-          <li id="p7-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas de 1.30mts de ancho c/u.)</span><span class="t-price" id="p7-twin">$—</span></li>
+          <li id="p7-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas individuales)</span><span class="t-price" id="p7-twin">$—</span></li>
           <li id="p7-matri-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL (cama king size)</span><span class="t-price" id="p7-matri">$—</span></li>
-          <li id="p7-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas de 1.30 mts de ancho c/u.)</span><span class="t-price" id="p7-triple">$—</span></li>
+          <li id="p7-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas individuales)</span><span class="t-price" id="p7-triple">$—</span></li>
           <li id="p7-superior-li" class="doc-tarifa-item"><span class="t-name">TRIPLE MATRIMONIAL (cama tamaño king size + una cama individual)</span><span class="t-price" id="p7-superior">$—</span></li>
           <li id="p7-cuad-li" class="doc-tarifa-item"><span class="t-name">CUÁDRUPLE (cama matrimonial king size + 2 camas individuales)</span><span class="t-price" id="p7-cuad">$—</span></li>
           <li id="p7-suite-li" class="doc-tarifa-item"><span class="t-name">SUITE DE LUJO (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)</span><span class="t-price" id="p7-suite">$—</span></li>
@@ -1129,9 +1129,9 @@ function calcularAutomaticos() {
 
 // ===== HABITACIONES MÚLTIPLES =====
 const HAB_TIPOS = [
-  { val: 'Doble Twin (2 camas de 1.30 mts de ancho c/u.)',                                               label: 'Doble Twin' },
+  { val: 'Doble Twin (2 camas individuales)',                                                             label: 'Doble Twin' },
   { val: 'Matrimonial (cama king size)',                                                                   label: 'Matrimonial' },
-  { val: 'Triple (3 camas de 1.30 mts de ancho c/u.)',                                                   label: 'Triple' },
+  { val: 'Triple (3 camas individuales)',                                                                 label: 'Triple' },
   { val: 'Triple Matrimonial (cama tamaño king size + una cama individual)',              label: 'Triple Matrimonial' },
   { val: 'Cuádruple (cama matrimonial king size + 2 camas individuales)',                                       label: 'Cuádruple' },
   { val: 'Suite de Lujo (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)', label: 'Suite de Lujo' },
@@ -1317,18 +1317,8 @@ function generarPDF() {
   const ciRaw = document.getElementById('f-checkin').value;
   const coRaw = document.getElementById('f-checkout').value;
   if (ciRaw && coRaw && coRaw <= ciRaw) return; // fechas inválidas, bloquear
-  const val    = document.getElementById('sel-plantilla').value;
-  const nombre = (document.getElementById('f-nombre').value || 'Cliente').trim().replace(/\s+/g,'_');
-  const ciRaw  = document.getElementById('f-checkin').value;
-  const coRaw  = document.getElementById('f-checkout').value;
-  const ci     = fmtFechaArchivo(ciRaw);
-  const co     = fmtFechaArchivo(coRaw);
-  const label  = PLANTILLAS[val].label;
-
-  let partes = [label, nombre];
-  if (ci) partes.push(ci);
-  if (co && co !== ci) partes.push(co);
-  const filename = partes.join('_') + '.pdf';
+  const val      = document.getElementById('sel-plantilla').value;
+  const filename = 'reserva-nawan.pdf';
   const tplId = PLANTILLAS[val].tpl;
 
   const btn = document.querySelector('.btn-generate');

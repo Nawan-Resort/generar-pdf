@@ -448,10 +448,10 @@
       </label>
       <div class="row-2">
         <label>Check-In *
-          <input type="date" id="f-checkin" onchange="actualizar()">
+          <input type="date" id="f-checkin" onchange="totalManual=false; actualizar()">
         </label>
         <label>Check-Out *
-          <input type="date" id="f-checkout" onchange="actualizar()">
+          <input type="date" id="f-checkout" onchange="totalManual=false; actualizar()">
         </label>
       </div>
       <div id="fecha-error-msg" class="date-error-msg">⚠ El Check-Out debe ser posterior al Check-In.</div>
@@ -483,10 +483,10 @@
         </div>
       </div>
       <label id="lbl-preciox">Precio final por noche
-        <input type="text" id="f-precio-noche" placeholder="Ej: 85.000" oninput="actualizar()">
+        <input type="text" id="f-precio-noche" placeholder="Ej: 85.000" oninput="totalManual=false; actualizar()">
       </label>
       <label id="lbl-total">Monto Total
-        <input type="text" id="f-total" placeholder="Ej: 255.000" oninput="actualizar()">
+        <input type="text" id="f-total" placeholder="Ej: 255.000" oninput="totalManual=true; actualizar()">
       </label>
       <div class="row-2" id="lbl-montos-dep">
         <label>Monto Depositado
@@ -940,7 +940,7 @@
       <div class="doc-section">
         <div class="doc-section-title">Opciones y Tarifas de Alojamiento – Precio final por noche</div>
         <ul class="doc-tarifa-list">
-          <li id="p6-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas individuales)</span><span class="t-price" id="p6-twin">$—</span></li>
+          <li id="p6-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas de 1.30mts de ancho c/u.)</span><span class="t-price" id="p6-twin">$—</span></li>
           <li id="p6-matri-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL (cama king size)</span><span class="t-price" id="p6-matri">$—</span></li>
           <li id="p6-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas individuales)</span><span class="t-price" id="p6-triple">$—</span></li>
           <li id="p6-superior-li" class="doc-tarifa-item"><span class="t-name">TRIPLE MATRIMONIAL (cama tamaño king size + una cama individual)</span><span class="t-price" id="p6-superior">$—</span></li>
@@ -1004,7 +1004,7 @@
       <div class="doc-section">
         <div class="doc-section-title">Opciones y Tarifas de Alojamiento – Precio final por noche</div>
         <ul class="doc-tarifa-list">
-          <li id="p7-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas individuales)</span><span class="t-price" id="p7-twin">$—</span></li>
+          <li id="p7-twin-li" class="doc-tarifa-item"><span class="t-name">DOBLE TWIN (2 camas de 1.30mts de ancho c/u.)</span><span class="t-price" id="p7-twin">$—</span></li>
           <li id="p7-matri-li" class="doc-tarifa-item"><span class="t-name">MATRIMONIAL (cama king size)</span><span class="t-price" id="p7-matri">$—</span></li>
           <li id="p7-triple-li" class="doc-tarifa-item"><span class="t-name">TRIPLE (3 camas individuales)</span><span class="t-price" id="p7-triple">$—</span></li>
           <li id="p7-superior-li" class="doc-tarifa-item"><span class="t-name">TRIPLE MATRIMONIAL (cama tamaño king size + una cama individual)</span><span class="t-price" id="p7-superior">$—</span></li>
@@ -1107,6 +1107,8 @@ function fmtT(v) { return v ? '$ '+v : '$—'; }
 
 function set(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
 
+let totalManual = false; // true cuando el usuario editó f-total a mano
+
 function calcularAutomaticos() {
   const ci = document.getElementById('f-checkin').value;
   const co = document.getElementById('f-checkout').value;
@@ -1116,10 +1118,11 @@ function calcularAutomaticos() {
     const nights = Math.round((d2 - d1) / (1000*60*60*24));
     if (nights > 0) {
       document.getElementById('f-noches').value = nights;
-      if (pn) {
-        const totalNum = nights * parseFloat(pn.replace(/\./g,'').replace(',','.'));
+      if (pn && !totalManual) {
+        const habRows = document.querySelectorAll('.hab-row');
+        const totalRooms = Math.max(1, Array.from(habRows).reduce((s, r) => s + (parseInt(r.querySelector('.hab-cant').value) || 1), 0));
+        const totalNum = nights * totalRooms * parseFloat(pn.replace(/\./g,'').replace(',','.'));
         if (!isNaN(totalNum)) {
-          // Format with dots as thousand separator
           document.getElementById('f-total').value = Math.round(totalNum).toLocaleString('es-AR').replace(/,/g,'.');
         }
       }
@@ -1129,12 +1132,12 @@ function calcularAutomaticos() {
 
 // ===== HABITACIONES MÚLTIPLES =====
 const HAB_TIPOS = [
-  { val: 'Doble Twin (2 camas individuales)',                                                             label: 'Doble Twin' },
-  { val: 'Matrimonial (cama king size)',                                                                   label: 'Matrimonial' },
-  { val: 'Triple (3 camas individuales)',                                                                 label: 'Triple' },
-  { val: 'Triple Matrimonial (cama tamaño king size + una cama individual)',              label: 'Triple Matrimonial' },
-  { val: 'Cuádruple (cama matrimonial king size + 2 camas individuales)',                                       label: 'Cuádruple' },
-  { val: 'Suite de Lujo (cama matrimonial king size + jacuzzi + living + balcón con mobiliario exterior)', label: 'Suite de Lujo' },
+  { val: 'Doble Twin (2 camas de 1.30mts de ancho c/u.)',                                                  label: 'Doble Twin' },
+  { val: 'Matrimonial (cama matrimonial tamaño King Size)',                                                 label: 'Matrimonial' },
+  { val: 'Triple (3 camas individuales)',                                                                   label: 'Triple' },
+  { val: 'Triple Matrimonial (cama matrimonial tamaño King Size + 1 cama individual)',                     label: 'Triple Matrimonial' },
+  { val: 'Cuádruple (cama matrimonial tamaño King Size + 2 camas individuales)',                           label: 'Cuádruple' },
+  { val: 'Suite de Lujo (cama matrimonial tamaño King Size + yacuzzi + living + balcón con mobiliario exterior)', label: 'Suite de Lujo' },
 ];
 
 function crearSelectTipo() {
@@ -1160,14 +1163,14 @@ function agregarHabitacion(tipoVal, cant) {
   const num = document.createElement('input');
   num.type = 'number'; num.className = 'hab-cant';
   num.value = cant || 1; num.min = 1; num.max = 10;
-  num.oninput = actualizar;
+  num.oninput = function() { totalManual = false; actualizar(); };
 
   const del = document.createElement('button');
   del.className = 'hab-del'; del.textContent = '×';
   del.title = 'Quitar habitación';
   del.onclick = function() {
     if (document.querySelectorAll('.hab-row').length > 1) {
-      row.remove(); actualizar();
+      row.remove(); totalManual = false; actualizar();
     }
   };
 

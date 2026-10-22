@@ -200,6 +200,13 @@
     content: "■"; position: absolute; left: 0;
     font-size: 5px; color: rgba(255,255,255,0.5); top: 6px;
   }
+  /* Tarifa Festival: garantía con tarjeta destacada */
+  .doc-info-item.destacado {
+    font-size: 15px; font-weight: 600; color: white;
+    padding: 9px 14px; margin: 4px 0;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.45); border-radius: 4px;
+  }
+  .doc-info-item.destacado::before { display: none; }
 
   /* Tarifas disponibilidad */
   .doc-tarifa-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
@@ -1138,7 +1145,10 @@ function aplicarFestival() {
   const on = document.getElementById('f-festival').checked;
   document.querySelectorAll('.doc-politica-normal').forEach(el => el.classList.toggle('hidden', on));
   document.querySelectorAll('.doc-politica-festival').forEach(el => el.classList.toggle('hidden', !on));
-  document.querySelectorAll('.info-garantia').forEach(el => { el.textContent = on ? GARANTIA_FESTIVAL : el.dataset.normal; });
+  document.querySelectorAll('.info-garantia').forEach(el => {
+    el.textContent = on ? GARANTIA_FESTIVAL : el.dataset.normal;
+    el.classList.toggle('destacado', on);
+  });
 
   const ci = document.getElementById('f-checkin').value;
   const co = document.getElementById('f-checkout').value;

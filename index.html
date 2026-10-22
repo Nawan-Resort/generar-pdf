@@ -1102,7 +1102,7 @@ const POLITICA_FESTIVAL = `
   <div class="doc-politica-title">Condiciones de contratación</div>
   <p>Estadía mínima de 2 noches.<br>Métodos de pago: transferencia/efectivo. 100% adelantado.<br>Consultar interés por pagos con TC.</p>
   <div class="doc-politica-title" style="margin-top:12px;">Política de Cancelación Nawan Resort Serrano</div>
-  <p>Cancelando con 15 (quince) ó más días de antelación a la fecha de entrada podrá reutilizarse el importe abonado en cualquier servicio del hotel en 2026.<br>En caso de cancelaciones fuera de los términos antes mencionados, el valor abonado será tomado en concepto de penalidad.<br>En caso de no presentarse en el hotel el día de llegada establecido o de no informar de una cancelación total de su reserva, el cargo del 100% de su estadía será tomado en concepto de penalidad.</p>`;
+  <p>Cancelando con 15 (quince) ó más días de antelación a la fecha de entrada podrá reutilizarse el importe abonado en cualquier servicio del hotel en 2027.<br>En caso de cancelaciones fuera de los términos antes mencionados, el valor abonado será tomado en concepto de penalidad.<br>En caso de no presentarse en el hotel el día de llegada establecido o de no informar de una cancelación total de su reserva, el cargo del 100% de su estadía será tomado en concepto de penalidad.</p>`;
 
 document.querySelectorAll('.doc-politica').forEach(pol => {
   const fest = document.createElement('div');
@@ -1112,9 +1112,13 @@ document.querySelectorAll('.doc-politica').forEach(pol => {
   pol.after(fest);
 });
 
-// Con el 100% adelantado no se pide garantía en el check-in
+// En festival la garantía del check-in es solo con tarjeta de crédito (sin la opción de pagar 1 noche)
+const GARANTIA_FESTIVAL = 'Se requerirá una tarjeta de crédito en garantía';
 document.querySelectorAll('.doc-info-item').forEach(li => {
-  if (li.textContent.includes('tarjeta de crédito en garantía')) li.classList.add('info-garantia');
+  if (li.textContent.includes('tarjeta de crédito en garantía')) {
+    li.classList.add('info-garantia');
+    li.dataset.normal = li.textContent;
+  }
 });
 
 // El festival se cobra 100% adelantado: cambia el texto de depósito si no fue editado a mano
@@ -1134,7 +1138,7 @@ function aplicarFestival() {
   const on = document.getElementById('f-festival').checked;
   document.querySelectorAll('.doc-politica-normal').forEach(el => el.classList.toggle('hidden', on));
   document.querySelectorAll('.doc-politica-festival').forEach(el => el.classList.toggle('hidden', !on));
-  document.querySelectorAll('.info-garantia').forEach(el => el.classList.toggle('hidden', on));
+  document.querySelectorAll('.info-garantia').forEach(el => { el.textContent = on ? GARANTIA_FESTIVAL : el.dataset.normal; });
 
   const ci = document.getElementById('f-checkin').value;
   const co = document.getElementById('f-checkout').value;

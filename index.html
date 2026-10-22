@@ -414,6 +414,10 @@
         <option value="reserva_deposito">7. Confirmación reserva depósito</option>
       </select>
     </label>
+    <label style="display:flex;flex-direction:row;align-items:center;gap:8px;margin-top:10px;cursor:pointer;">
+      <input type="checkbox" id="f-festival" onchange="actualizar()" style="width:auto;margin:0;">
+      Tarifa Festival (condiciones especiales)
+    </label>
   </div>
 
   <!-- Datos del cliente -->
@@ -1092,6 +1096,27 @@ function cambiarPlantilla() {
   actualizar();
 }
 
+// Condiciones Tarifa Festival: reemplazan la política de cancelación habitual
+const POLITICA_FESTIVAL = `
+  <div class="doc-politica-title">Condiciones de contratación</div>
+  <p>Estadía mínima de 2 noches.<br>Métodos de pago: transferencia/efectivo. 100% adelantado.<br>Consultar interés por pagos con TC.</p>
+  <div class="doc-politica-title" style="margin-top:12px;">Política de Cancelación Nawan Resort Serrano</div>
+  <p>Cancelando con 15 (quince) ó más días de antelación a la fecha de entrada podrá reutilizarse el importe abonado en cualquier servicio del hotel en 2026.<br>En caso de cancelaciones fuera de los términos antes mencionados, el valor abonado será tomado en concepto de penalidad.<br>En caso de no presentarse en el hotel el día de llegada establecido o de no informar de una cancelación total de su reserva, el cargo del 100% de su estadía será tomado en concepto de penalidad.</p>`;
+
+document.querySelectorAll('.doc-politica').forEach(pol => {
+  const fest = document.createElement('div');
+  fest.className = 'doc-politica doc-politica-festival hidden';
+  fest.innerHTML = POLITICA_FESTIVAL;
+  pol.classList.add('doc-politica-normal');
+  pol.after(fest);
+});
+
+function aplicarFestival() {
+  const on = document.getElementById('f-festival').checked;
+  document.querySelectorAll('.doc-politica-normal').forEach(el => el.classList.toggle('hidden', on));
+  document.querySelectorAll('.doc-politica-festival').forEach(el => el.classList.toggle('hidden', !on));
+}
+
 function tog(id, show) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('hidden', !show);
@@ -1208,6 +1233,7 @@ function visTarifa(key, val) {
 
 function actualizar() {
   calcularAutomaticos();
+  aplicarFestival();
   const val       = document.getElementById('sel-plantilla').value;
   const nombre    = document.getElementById('f-nombre').value || '—';
   const tratam    = document.getElementById('f-tratamiento').value || 'Estimado';

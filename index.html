@@ -459,6 +459,7 @@
         </label>
       </div>
       <div id="fecha-error-msg" class="date-error-msg">⚠ El Check-Out debe ser posterior al Check-In.</div>
+      <div id="festival-noches-msg" class="date-error-msg">⚠ Tarifa Festival: la estadía mínima es de 2 noches.</div>
       <div class="row-2" id="lbl-horarios">
         <label>Check-In desde
           <input type="text" id="f-ci-hora" value="14:30" oninput="actualizar()">
@@ -1111,6 +1112,11 @@ document.querySelectorAll('.doc-politica').forEach(pol => {
   pol.after(fest);
 });
 
+// Con el 100% adelantado no se pide garantía en el check-in
+document.querySelectorAll('.doc-info-item').forEach(li => {
+  if (li.textContent.includes('tarjeta de crédito en garantía')) li.classList.add('info-garantia');
+});
+
 // El festival se cobra 100% adelantado: cambia el texto de depósito si no fue editado a mano
 const DEPOSITO_NORMAL   = '50% de depósito bancario del valor total de la estadía.';
 const DEPOSITO_FESTIVAL = '100% de depósito bancario del valor total de la estadía.';
@@ -1128,6 +1134,13 @@ function aplicarFestival() {
   const on = document.getElementById('f-festival').checked;
   document.querySelectorAll('.doc-politica-normal').forEach(el => el.classList.toggle('hidden', on));
   document.querySelectorAll('.doc-politica-festival').forEach(el => el.classList.toggle('hidden', !on));
+  document.querySelectorAll('.info-garantia').forEach(el => el.classList.toggle('hidden', on));
+
+  const ci = document.getElementById('f-checkin').value;
+  const co = document.getElementById('f-checkout').value;
+  const noches = (ci && co) ? Math.round((new Date(co) - new Date(ci)) / 86400000)
+                            : parseInt(document.getElementById('f-noches').value, 10);
+  document.getElementById('festival-noches-msg').classList.toggle('visible', on && noches > 0 && noches < 2);
 }
 
 function tog(id, show) {

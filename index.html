@@ -415,7 +415,7 @@
       </select>
     </label>
     <label style="display:flex;flex-direction:row;align-items:center;gap:8px;margin-top:10px;cursor:pointer;">
-      <input type="checkbox" id="f-festival" onchange="actualizar()" style="width:auto;margin:0;">
+      <input type="checkbox" id="f-festival" onchange="cambiarFestival()" style="width:auto;margin:0;">
       Tarifa Festival (condiciones especiales)
     </label>
   </div>
@@ -1110,6 +1110,19 @@ document.querySelectorAll('.doc-politica').forEach(pol => {
   pol.classList.add('doc-politica-normal');
   pol.after(fest);
 });
+
+// El festival se cobra 100% adelantado: cambia el texto de depósito si no fue editado a mano
+const DEPOSITO_NORMAL   = '50% de depósito bancario del valor total de la estadía.';
+const DEPOSITO_FESTIVAL = '100% de depósito bancario del valor total de la estadía.';
+
+function cambiarFestival() {
+  const on = document.getElementById('f-festival').checked;
+  const dep = document.getElementById('f-deposito-texto');
+  if (dep.value.trim() === (on ? DEPOSITO_NORMAL : DEPOSITO_FESTIVAL)) {
+    dep.value = on ? DEPOSITO_FESTIVAL : DEPOSITO_NORMAL;
+  }
+  actualizar();
+}
 
 function aplicarFestival() {
   const on = document.getElementById('f-festival').checked;
